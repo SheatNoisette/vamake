@@ -1,0 +1,13 @@
+include tests/include_common.mk
+
+# Additional variables
+TARGET=myapp
+SOURCES=main.c utils.c
+
+.PHONY: all clean install
+
+install:
+	cp $(TARGET) /usr/local/bin/
+
+uninstall:
+	rm -f /usr/local/bin/$(TARGET)

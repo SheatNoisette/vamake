@@ -1,0 +1,29 @@
+SHELL = /bin/bash
+
+DIR_NAME = $(shell basename $(PWD))
+
+SRCS = $(shell find . -name "*.c" -type f)
+OBJS = $(SRCS:.c=.o)
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c11
+LDFLAGS =
+
+all: $(DIR_NAME)
+
+$(DIR_NAME): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(DIR_NAME)
+
+install: $(DIR_NAME)
+	cp $(DIR_NAME) /usr/local/bin/
+
+uninstall:
+	rm -f /usr/local/bin/$(DIR_NAME)
+
+.PHONY: all clean install uninstall

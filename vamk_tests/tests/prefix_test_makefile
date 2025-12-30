@@ -1,0 +1,21 @@
+# Test makefile for recipe prefixes
+.PHONY: all test_silent test_ignore test_force test_combined
+
+all: test_silent test_ignore test_force test_combined
+
+test_silent:
+	@echo "This should not be echoed (silent)"
+	@echo "But this should be visible"
+
+test_ignore:
+	-nonexistent_command
+	echo "This should run even if previous failed"
+
+test_force:
+	echo "Normal command"
+
+test_combined:
+	echo "Testing combined prefixes"
+	echo "This should be silent"
+	@echo hello
+	echo fourth

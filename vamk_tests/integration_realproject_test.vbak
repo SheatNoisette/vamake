@@ -1,0 +1,69 @@
+import vamk
+import os
+
+// This is a simulation of a real project and a makefile that I have saw
+// in a real environement, it's the bare minimum that should be supported for C
+// projects in my mind
+
+// @TODO: WHY THIS TEST GENERATE BOGUS CODE FROM THE COMPILER !?
+fn test_integration_build_real_project() {
+	project_dir := 'real_project'
+
+	// Clean the project directory first
+	os.chdir('vamk_tests') or {
+		eprintln('Failed to change to vamk_tests directory')
+		return
+	}
+	defer {
+		os.chdir('..') or {}
+	}
+
+	// Remove any existing old build artifacts, can fail if they doesn't exists
+	os.rm('real_project/hello') or {}
+	os.rm('real_project/main.o') or {}
+	os.rm('real_project/utils.o') or {}
+
+	// Verify files are gone
+	assert !os.exists('${project_dir}/hello')
+	assert !os.exists('${project_dir}/main.o')
+	assert !os.exists('${project_dir}/utils.o')
+
+	// Change to project directory first (for include resolution)
+	os.chdir(project_dir) or {
+		eprintln('Failed to change to project directory!')
+		error('Could not change dir end !')
+	}
+	defer {
+		os.chdir('..') or {
+			eprintln('Failed to change to project directory at the end!')
+			error('Could not change dir end !')
+		}
+	}
+
+	content := os.read_file('Makefile') or {
+		eprintln('Failed to read Makefile')
+		return
+	}
+
+	mut parser := vamk.new_parser(content)
+	nodes := parser.parse()
+
+	mut evaluator := vamk.new_evaluator(false, false)
+	evaluator.eval(nodes)
+
+	// Build the 'all' target (which builds 'hello')
+	evaluator.build_target('all') or {
+		eprintln('Failed to build: ${err}')
+		return
+	}
+
+	// Verify that the expected files were created
+	assert os.exists('hello'), 'Expected hello executable to be built'
+	assert os.exists('main.o'), 'Expected main.o object file to be built'
+	assert os.exists('utils.o'), 'Expected utils.o object file to be built'
+
+	// Clean up after test
+	os.rm('hello') or { error('Error while deleting hello') }
+	os.rm('main.o') or { error('Error while deleting main.o') }
+	os.rm('utils.o') or { error('Error while deleting utils.o') }
+}

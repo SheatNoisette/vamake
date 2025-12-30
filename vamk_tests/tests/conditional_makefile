@@ -1,0 +1,30 @@
+# Makefile with conditionals
+CC = gcc
+
+ifdef DEBUG
+CFLAGS = -Wall -g -DDEBUG
+else
+CFLAGS = -Wall -O2
+endif
+
+ifndef OPTIMIZE
+OPTIMIZE = -O2
+endif
+
+TARGET = myapp
+
+all: $(TARGET)
+
+$(TARGET): main.o lib.o
+	$(CC) $(CFLAGS) $(OPTIMIZE) -o $@ $^
+
+main.o: main.c
+	$(CC) $(CFLAGS) -c $<
+
+lib.o: lib.c
+	$(CC) $(CFLAGS) -c $<
+
+clean:
+	rm -f *.o $(TARGET)
+
+.PHONY: all clean
