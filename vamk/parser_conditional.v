@@ -91,10 +91,6 @@ fn (mut p Parser) parse_conditional_block() []ASTNode {
 	return nodes
 }
 
-fn (p &Parser) is_token(value string) bool {
-	return p.current_token.kind == .ident && p.current_token.value == value
-}
-
 fn (p &Parser) is_else_directive() bool {
 	return p.is_token(token_str_else)
 }

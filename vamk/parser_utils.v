@@ -8,6 +8,10 @@ fn (mut p Parser) peek() Token {
 	return p.current_token
 }
 
+fn (p &Parser) is_token(value string) bool {
+	return p.current_token.kind == .ident && p.current_token.value == value
+}
+
 fn (mut p Parser) expect(kind TokenKind) Token {
 	if p.current_token.kind != kind {
 		panic('Expected ${kind}, got ${p.current_token.kind}')
